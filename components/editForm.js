@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useRouter, withRouter } from "next/router";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -7,35 +7,41 @@ import Button from "./button";
 import Input from "./input";
 import { DataContext } from "../contexts/dataContext";
 
-const Form = () => {
+const EditForm = (props) => {
   const router = useRouter();
-
+  const { data, setData } = useContext(DataContext);
   const [title, setTitle] = useState("");
   const [lang, setLang] = useState("");
   const [desc, setDesc] = useState("");
-  const [error, setError] = useState(false);
-  const { data, setData } = useContext(DataContext);
+
+  const titleToUpdate = props.router.query.title;
+  const langToUpdate = props.router.query.lang;
+  const descToUpdate = props.router.query.desc;
+
+  useEffect(() => {
+    setTitle(titleToUpdate);
+    setDesc(descToUpdate);
+    setLang(langToUpdate);
+  }, [descToUpdate, langToUpdate, titleToUpdate]);
 
   const handleTitle = (e) => {
+    e.preventDefault();
     setTitle(e.target.value);
   };
 
   const handleDesc = (e) => {
+    e.preventDefault();
     setDesc(e.target.value);
   };
 
   const handleSelect = (e) => {
+    e.preventDefault();
     setLang(e.target.value);
   };
 
-  const handleSubmit = () => {
-    if (title != "" && lang != "" && desc != "") {
-      setError(false);
-      setData([{ title: title, lang: lang, desc: desc }, ...data]);
-      router.push("/");
-    } else {
-      setError(true);
-    }
+  const handleUpdate = () => {
+    setData([{ title: title, lang: lang, desc: desc }, ...data]);
+    router.push("/");
   };
 
   return (
@@ -66,14 +72,9 @@ const Form = () => {
         value={desc}
         placeholder="Enter a Description"
       />
-      <Button onClick={handleSubmit} value="Submit" />
-      {error ? (
-        <div className="error">
-          <h2>All fields are required</h2>
-        </div>
-      ) : null}
+      <Button onClick={handleUpdate} value="Update" />
     </div>
   );
 };
 
-export default Form;
+export default withRouter(EditForm);

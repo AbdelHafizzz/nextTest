@@ -12,7 +12,6 @@ const Row = (props) => {
   const row = props.row;
 
   const handleView = (row) => {
-    console.log("View");
     router.push({
       pathname: "tutorial",
       query: { title: row.title },
@@ -24,6 +23,14 @@ const Row = (props) => {
       (item) => data.indexOf(item) != data.indexOf(row)
     );
     setData(updatedData);
+  };
+
+  const handleEdit = async(row) => {
+    await router.push({
+      pathname: "edit",
+      query: { title: row.title, desc: row.desc, lang: row.lang },
+    });
+    handleDelete(row);
   };
 
   return (
@@ -52,6 +59,7 @@ const Row = (props) => {
         ) : (
           <div className="actionsDiv">
             <Button value="View" onClick={() => handleView(row)} />
+            <Button value="Edit" onClick={() => handleEdit(row)} />
             <Button value="Delete" onClick={() => handleDelete(row)} />
           </div>
         )}
